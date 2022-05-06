@@ -1,4 +1,4 @@
-package com.example.doordashhelperserver;
+package com.filipkin.doordashhelperserver;
 
 import android.content.Context;
 

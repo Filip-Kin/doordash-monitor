@@ -1,4 +1,4 @@
-package com.example.doordashhelperserver;
+package com.filipkin.doordashhelperserver;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

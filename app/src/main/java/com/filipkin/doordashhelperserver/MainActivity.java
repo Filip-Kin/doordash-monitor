@@ -1,6 +1,6 @@
-package com.example.doordashhelperserver;
+package com.filipkin.doordashhelperserver;
 
-import static com.example.doordashhelperserver.Utils.getIPAddress;
+import static com.filipkin.doordashhelperserver.Utils.getIPAddress;
 
 import android.content.Intent;
 import android.os.Bundle;

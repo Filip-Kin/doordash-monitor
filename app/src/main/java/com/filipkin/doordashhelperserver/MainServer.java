@@ -1,6 +1,4 @@
-package com.example.doordashhelperserver;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.filipkin.doordashhelperserver;
 
 import ru.skornei.restserver.annotations.RestServer;
 import ru.skornei.restserver.server.BaseRestServer;
