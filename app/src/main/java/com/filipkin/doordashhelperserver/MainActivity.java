@@ -33,8 +33,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         startService(new Intent(this, NotificationMonitor.class));
+        startService(new Intent(this, DDAccessibilityService.class));
 
-        Log.i("APP", "test");
+        Log.i("Log file", getApplicationContext().getFilesDir() + "/log");
     }
 
     @Override
