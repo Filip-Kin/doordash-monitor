@@ -7,6 +7,9 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
+import com.filipkin.doordashhelperserver.web.OfferController;
+import com.filipkin.doordashhelperserver.web.OfferEntity;
+
 import java.util.List;
 
 public class NotificationMonitor extends NotificationListenerService {

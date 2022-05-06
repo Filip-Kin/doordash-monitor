@@ -1,4 +1,4 @@
-package com.filipkin.doordashhelperserver;
+package com.filipkin.doordashhelperserver.web;
 
 import java.io.IOException;
 import java.io.PrintWriter;

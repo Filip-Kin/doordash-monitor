@@ -1,4 +1,4 @@
-package com.filipkin.doordashhelperserver;
+package com.filipkin.doordashhelperserver.web;
 
 public class OfferEntity {
 

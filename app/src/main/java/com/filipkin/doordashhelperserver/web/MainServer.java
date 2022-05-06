@@ -1,4 +1,4 @@
-package com.filipkin.doordashhelperserver;
+package com.filipkin.doordashhelperserver.web;
 
 import ru.skornei.restserver.annotations.RestServer;
 import ru.skornei.restserver.server.BaseRestServer;
