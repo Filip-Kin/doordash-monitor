@@ -1,0 +1,73 @@
+<HTML>
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <style>
+            td {
+                font-size: 24px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" style="width: 90%">
+            <div class="row">
+                <a href="#" class="btn" id="fullscreen-btn">Full screen</a>
+            </div>
+            <div class="row">
+                <div class="col s8">
+                    <table>
+                        <tr>
+                            <td>Amount</td>
+                            <td id="offer-amount" style="font-weight: 900; font-size: 36px"></td>
+                        </tr>
+                        <tr>
+                            <td>Tip</td>
+                            <td id="offer-tip"></td>
+                        </tr>
+                        <tr>
+                            <td>Order</td>
+                            <td id="offer-subtotal"></td>
+                        </tr>
+                        <tr>
+                            <td>Store</td>
+                            <td id="offer-store"></td>
+                        </tr>
+                        <tr>
+                            <td>Drive Time</td>
+                            <td id="offer-drivetime"></td>
+                        </tr>
+                        <tr>
+                            <td>Estimated Hourly</td>
+                            <td id="offer-hourly"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script>
+            function padDecimal(str) {
+                let parts = str.toString().split('.');
+                if (parts[1] == undefined) parts[1] = '00';
+                return `${parts[0]}.${parts[1].padEnd(2, '0')}`;
+            }
+
+            let fsbtn = document.getElementById('fullscreen-btn');
+            fsbtn.addEventListener('click', () => {
+                document.documentElement.webkitRequestFullScreen();
+                fsbtn.style.display = 'none';
+            });
+
+            function updateOfferUI(offer) {
+                document.getElementById('offer-amount').innerHTML = `$${padDecimal(offer.amount)}`;
+                document.getElementById('offer-tip').innerHTML = `$${padDecimal(offer.tip)} ${offer.confident ? '&#10024;' : '&#10067;'}`;
+                document.getElementById('offer-store').innerHTML = offer.store;
+                document.getElementById('offer-drivetime').innerHTML = `${offer.driveTime} Mins`;
+                document.getElementById('offer-hourly').innerHTML = `$${padDecimal(offer.hourly)}/hr`;
+                document.getElementById('offer-subtotal').innerHTML = `$${padDecimal(offer.subtotal)}`;
+            }
+
+            setInterval(() => {
+                fetch('/offer').then(res => res.json()).then(updateOfferUI);
+            }, 1e3);
+        </script>
+    </body>
+</HTML>
