@@ -8,10 +8,18 @@
         </style>
     </head>
     <body>
-        <div class="container" style="width: 90%">
+        <div class="container center">
             <div class="row">
-                <a href="#" class="btn" id="fullscreen-btn">Full screen</a>
+                <div class="input-field col s12">
+                    <input type="text" name="device-id" id="device-id">
+                    <label for="device-id">Device ID</label>
+                </div>
             </div>
+            <div class="row">
+                <a href="#" class="btn" id="connect-btn">Connect</a>
+            </div>
+        </div>
+        <div class="container" style="width: 90%; display: none" id="offer-ui">
             <div class="row">
                 <div class="col s8">
                     <table>
@@ -43,6 +51,7 @@
                 </div>
             </div>
         </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <script>
             function padDecimal(str) {
                 let parts = str.toString().split('.');
@@ -50,11 +59,33 @@
                 return `${parts[0]}.${parts[1].padEnd(2, '0')}`;
             }
 
-            let fsbtn = document.getElementById('fullscreen-btn');
-            fsbtn.addEventListener('click', () => {
+            let ws;
+            let id = localStorage.getItem('id');
+            if (id) {
+                document.getElementById('device-id').value = id;
+                M.updateTextFields();
+            }
+
+            let connectButton = document.getElementById('connect-btn')
+            connectButton.addEventListener('click', () => {
                 document.documentElement.webkitRequestFullScreen();
-                fsbtn.style.display = 'none';
+                id = document.getElementById('device-id').value;
+                fetch('/app/'+id).then(res => res.text()).then(ip => {
+                    ws = new WebSocket('ws://'+ip+':8080');
+                    localStorage.setItem('id', id);
+
+                    ws.addEventListener('message', evt => {
+                        let msg = JSON.parse(evt.data);
+                        if (msg.type === "offer") {
+                            updateOfferUI(msg);
+                        }
+                    });
+
+                });
+                connectButton.parentElement.parentElement.style.display = 'none';
+                document.getElementById('offer-ui').style.display = 'block';
             });
+
 
             function updateOfferUI(offer) {
                 document.getElementById('offer-amount').innerHTML = `$${padDecimal(offer.amount)}`;
@@ -64,10 +95,6 @@
                 document.getElementById('offer-hourly').innerHTML = `$${padDecimal(offer.hourly)}/hr`;
                 document.getElementById('offer-subtotal').innerHTML = `$${padDecimal(offer.subtotal)}`;
             }
-
-            setInterval(() => {
-                fetch('/offer').then(res => res.json()).then(updateOfferUI);
-            }, 1e3);
         </script>
     </body>
 </HTML>

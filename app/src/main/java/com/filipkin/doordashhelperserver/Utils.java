@@ -1,5 +1,7 @@
 package com.filipkin.doordashhelperserver;
 
+import static java.text.DateFormat.getTimeInstance;
+
 import android.content.Context;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
@@ -10,8 +12,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,11 +117,17 @@ public class Utils {
         try {
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-            buf.append(text);
+            buf.append("["+getTimeInstance()+"] " + text);
             buf.newLine();
             buf.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void logError(Context context, Exception e) {
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        Utils.appendLog(context, sw.toString());
     }
 }
