@@ -11,4 +11,8 @@ public class DoordashScreen {
     public static final int END_DASH_CONFIRMATION = 8;
     public static final int MAIN_MENU = 9;
     public static final int DASH_START_SELECT_ENDTIME = 10;
+    public static final int DELIVERY = 11;
+    public static final int DELIVERY_PICTURE = 12;
+    public static final int DELIVERY_DROPOFF = 13;
+    public static final int DELIVERY_CONFIRM = 14;
 }

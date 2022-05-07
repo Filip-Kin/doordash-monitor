@@ -44,20 +44,25 @@ public class DDAccessibilityService extends AccessibilityService {
      * @return int representing screen type
      */
     private int getScreenType(List<CharSequence> allText) {
+        if (allText.size() < 2) return 0;
         String text = allText.get(1).toString();
-        if (text.equals("Before you begin")) return DoordashScreen.DASH_START;
-        if (text.equals("Looking for orders")) return DoordashScreen.LOOKING_FOR_ORDERS;
-        if (text.equals("Decline")) return DoordashScreen.OFFER;
-        if (text.equals("Are you sure you want to decline this order?"))
+        if (text.equalsIgnoreCase("Before you begin")) return DoordashScreen.DASH_START;
+        if (text.equalsIgnoreCase("Looking for Orders")) return DoordashScreen.LOOKING_FOR_ORDERS;
+        if (text.equalsIgnoreCase("Decline")) return DoordashScreen.OFFER;
+        if (text.equalsIgnoreCase("Are you sure you want to decline this order?"))
             return DoordashScreen.OFFER_DECLINE_CONFIRMATION;
         if (text.startsWith("Pick up by")) return DoordashScreen.PICKUP;
-        if (text.equals("Current Dash")) return DoordashScreen.HELP_DURING_PICKUP;
-        if (text.equals("Your completion rate will drop to:"))
+        if (text.equalsIgnoreCase("Current Dash")) return DoordashScreen.HELP_DURING_PICKUP;
+        if (text.equalsIgnoreCase("Your completion rate will drop to:"))
             return DoordashScreen.ORDER_UNASSIGN_CONFIRMATION;
         if (text.startsWith("Demand is high for dashers"))
             return DoordashScreen.END_DASH_CONFIRMATION;
-        if (text.equals("Dash")) return DoordashScreen.MAIN_MENU;
-        if (text.equals("Dash Now")) return DoordashScreen.DASH_START_SELECT_ENDTIME;
+        if (text.equalsIgnoreCase("Dash")) return DoordashScreen.MAIN_MENU;
+        if (text.equalsIgnoreCase("Dash Now")) return DoordashScreen.DASH_START_SELECT_ENDTIME;
+        if (text.startsWith("Deliver by")) return DoordashScreen.DELIVERY;
+        if (text.equalsIgnoreCase("From Camera")) return DoordashScreen.DELIVERY_PICTURE;
+        if (text.startsWith("Drop-off")) return DoordashScreen.DELIVERY_DROPOFF;
+        if (text.equalsIgnoreCase("Rate this delivery")) return DoordashScreen.DELIVERY_CONFIRM;
         return 0;
     }
 }
