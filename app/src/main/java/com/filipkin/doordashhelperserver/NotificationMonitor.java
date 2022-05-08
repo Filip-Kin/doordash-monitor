@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -15,7 +16,7 @@ import java.util.List;
 
 public class NotificationMonitor extends NotificationListenerService {
 
-    private final String TITLE_PATTERN = "^\\[DD\\] \\$(\\d+\\.\\d{2}) \\(tip: \\$(\\d+\\.\\d{2})( ✨)*\\) - (.+)$";
+    private final String TITLE_PATTERN = "^\\[DD\\] \\$(\\d+\\.\\d{2}) (\uD83D\uDCB3 )*\\(tip: \\$(\\d+\\.\\d{2})( ✨)*\\) - (.+)$";
     private final String TEXT_PATTERN = "^(Subtotal: \\$(\\d+\\.\\d{2}))*.+\\nDrive time: (\\d+) mins$";
 
     @Override
@@ -30,6 +31,7 @@ public class NotificationMonitor extends NotificationListenerService {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Toast.makeText(getApplicationContext(), "Notification Listener Binded", Toast.LENGTH_LONG).show();
         return super.onBind(intent);
     }
 
@@ -47,11 +49,11 @@ public class NotificationMonitor extends NotificationListenerService {
 
             ParaOffer offer = new ParaOffer(
                     Double.parseDouble(titleMatches.get(1)),
-                    Double.parseDouble(titleMatches.get(2)),
+                    Double.parseDouble(titleMatches.get(3)),
                     (textMatches.get(1) == null) ? 0.0 : Double.parseDouble(textMatches.get(2)),
                     Integer.parseInt(textMatches.get(3)),
-                    (titleMatches.get(3) != null),
-                    (titleMatches.get(4) == null ? "Unknown" : titleMatches.get(4))
+                    (titleMatches.get(4) != null),
+                    (titleMatches.get(5) == null ? "Unknown" : titleMatches.get(5))
             );
             wsServer.sendMessage(offer.toJson());
         } catch (Exception e) {

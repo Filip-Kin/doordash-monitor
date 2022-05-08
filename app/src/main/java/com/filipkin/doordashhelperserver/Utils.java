@@ -2,7 +2,9 @@ package com.filipkin.doordashhelperserver;
 
 import static java.text.DateFormat.getTimeInstance;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 
@@ -19,11 +21,15 @@ import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+
+    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+
     public static String getIPAddress(boolean useIPv4) {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -117,7 +123,8 @@ public class Utils {
         try {
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
-            buf.append("["+getTimeInstance()+"] " + text);
+
+            buf.append("[" + sdf.format(new Date()) + "] " + text);
             buf.newLine();
             buf.close();
         } catch (IOException e) {
@@ -129,5 +136,19 @@ public class Utils {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         Utils.appendLog(context, sw.toString());
+    }
+
+    public static Activity getActivity(Context context) {
+        if (context == null) {
+            return null;
+        } else if (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity) context;
+            } else {
+                return getActivity(((ContextWrapper) context).getBaseContext());
+            }
+        }
+
+        return null;
     }
 }

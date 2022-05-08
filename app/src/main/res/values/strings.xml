@@ -5,4 +5,5 @@
 
     <string name="ip_address">IP Address</string>
     <string name="accessibility_service_description">Doordash Accessability Service</string>
+    <string name="startWSSButton">Start WSS</string>
 </resources>

@@ -3,12 +3,14 @@ package com.filipkin.doordashhelperserver;
 import static com.filipkin.doordashhelperserver.Utils.getIPAddress;
 import static com.filipkin.doordashhelperserver.Utils.logError;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
             InetSocketAddress inetSockAddress = new InetSocketAddress("0.0.0.0", 8080);
             wsServer = new SocketServer(getApplicationContext(), inetSockAddress);
-            wsServer.start();
         } catch (Exception e) {
             e.printStackTrace();
             Utils.logError(getApplicationContext(), e);
@@ -50,6 +51,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    public void startWSServer(View view) {
+        if (SocketServer.wsServerRunning) return;
+        wsServer.start();
     }
 
     private String getDeviceID() {

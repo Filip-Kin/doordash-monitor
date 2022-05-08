@@ -6,11 +6,6 @@ let ids = {};
 
 app.post('/app/:id/:ip', (req, res) => {
     console.log(`New id ${req.params.id} -> ${req.params.ip}`);
-    if (ids[req.params.id] != undefined && ids[req.params.id] != req.params.ip) {
-        res.status(400);
-        res.send('ID in use');
-        return;
-    }
     ids[req.params.id] = req.params.ip;
     res.send(req.params.id)
 });

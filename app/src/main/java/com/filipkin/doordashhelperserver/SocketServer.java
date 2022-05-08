@@ -1,7 +1,10 @@
 package com.filipkin.doordashhelperserver;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Looper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.filipkin.doordashhelperserver.Utils;
 
@@ -14,6 +17,7 @@ public class SocketServer extends org.java_websocket.server.WebSocketServer {
 
     private Context context;
     private WebSocket conn;
+    public static boolean wsServerRunning = false;
 
     public SocketServer(Context context, InetSocketAddress address) {
         super(address);
@@ -33,7 +37,10 @@ public class SocketServer extends org.java_websocket.server.WebSocketServer {
 
     @Override
     public void onStart() {
+        wsServerRunning = true;
         Log.i("WSS", "Started WebSocket Server");
+        Looper.prepare();
+        Toast.makeText(context, "WS Server Started", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -45,6 +52,8 @@ public class SocketServer extends org.java_websocket.server.WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         this.conn = conn;
         Log.i("WSS", "New connection to " + conn.getRemoteSocketAddress());
+        Looper.prepare();
+        Toast.makeText(context, "WS Client Connected", Toast.LENGTH_LONG).show();
     }
 
     public void sendMessage(String msg) {
