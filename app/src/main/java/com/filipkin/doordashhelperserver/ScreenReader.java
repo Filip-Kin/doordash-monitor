@@ -38,13 +38,19 @@ public class ScreenReader extends AccessibilityService {
 
                 // List all text for debug
                 List<CharSequence> allText = Utils.getAllChildNodeText(source);
-                String screen = String.valueOf(getScreenType(allText));
-                Log.v("Screen", screen);
+                int screen = getScreenType(allText);
+                Log.v("Screen", String.valueOf(screen));
                 for (int i = 0; i < allText.size(); i++) {
                     Log.v("Child " + i, allText.get(i).toString());
                 }
 
                 Utils.appendLog(getApplicationContext(), "Screen " + screen + " " + allText.toString());
+                if (screen == Screen.DELIVERY) {
+                    int addy = allText.indexOf("Delivery for")+2;
+                    if (!allText.get(addy).equals("Directions")) {
+                        MainActivity.wsServer.send("{\"type\": \"address\", \"address\": \""+allText.get(addy)+"\"}");
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

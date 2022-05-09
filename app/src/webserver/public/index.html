@@ -49,6 +49,9 @@
                         </tr>
                     </table>
                 </div>
+                <div class="col s4">
+                    <h3 id="delivery-housenumber"></h3>
+                </div>
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -74,10 +77,15 @@
                 localStorage.setItem('id', id);
 
                 ws.addEventListener('message', (evt) => {
-                    if (evt.data === 'OK') return ws.send(`CONNECT:${id}`);
+                    if (evt.data === 'OK') {
+                        M.toast({html: 'Connected to server'});
+                        return ws.send(`CONNECT:${id}`);
+                    }
                     let msg = JSON.parse(evt.data);
-                    if (msg.type === "offer") {
+                    if (msg.type === 'offer') {
                         updateOfferUI(msg);
+                    } else if(msg.type === 'address') {
+                        document.getElementById('delivery-housenumber').innerHTML = msg.address;
                     }
                 });
                 connectButton.parentElement.parentElement.style.display = 'none';
