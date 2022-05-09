@@ -13,4 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
-/app/src/webserver/node_modules
+node_modules/*
+app/src/webserver/node_modules/*
+app/src/webserver/out/*

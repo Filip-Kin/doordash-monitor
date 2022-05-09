@@ -70,17 +70,15 @@
             connectButton.addEventListener('click', () => {
                 document.documentElement.webkitRequestFullScreen();
                 id = document.getElementById('device-id').value;
-                fetch('/app/'+id).then(res => res.text()).then(ip => {
-                    ws = new WebSocket('ws://'+ip+':8080');
-                    localStorage.setItem('id', id);
+                ws = new WebSocket(`wss://${new URL(window.location).hostname}:9008`);
+                localStorage.setItem('id', id);
 
-                    ws.addEventListener('message', evt => {
-                        let msg = JSON.parse(evt.data);
-                        if (msg.type === "offer") {
-                            updateOfferUI(msg);
-                        }
-                    });
-
+                ws.addEventListener('message', (evt) => {
+                    if (evt.data === 'OK') return ws.send(`CONNECT:${id}`);
+                    let msg = JSON.parse(evt.data);
+                    if (msg.type === "offer") {
+                        updateOfferUI(msg);
+                    }
                 });
                 connectButton.parentElement.parentElement.style.display = 'none';
                 document.getElementById('offer-ui').style.display = 'block';

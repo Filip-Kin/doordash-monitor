@@ -55,7 +55,7 @@ public class NotificationMonitor extends NotificationListenerService {
                     (titleMatches.get(4) != null),
                     (titleMatches.get(5) == null ? "Unknown" : titleMatches.get(5))
             );
-            wsServer.sendMessage(offer.toJson());
+            wsServer.send(offer.toJson());
         } catch (Exception e) {
             e.printStackTrace();
             Utils.logError(getApplicationContext(), e);

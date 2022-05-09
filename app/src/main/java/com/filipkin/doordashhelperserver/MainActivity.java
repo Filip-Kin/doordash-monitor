@@ -1,9 +1,5 @@
 package com.filipkin.doordashhelperserver;
 
-import static com.filipkin.doordashhelperserver.Utils.getIPAddress;
-import static com.filipkin.doordashhelperserver.Utils.logError;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,14 +11,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.URL;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static SocketServer wsServer;
+    public static WebSocketConn wsServer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,17 +24,12 @@ public class MainActivity extends AppCompatActivity {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
 
-            // Fetch or generate an ID for this device
-            String id = getDeviceID();
-            // Give IP to the mothership
-            String ip = getIPAddress(true);
-            Log.i("ID response", String.valueOf(sendIP(id, ip)));
-
             startService(new Intent(this, NotificationMonitor.class));
             startService(new Intent(this, ScreenReader.class));
 
-            InetSocketAddress inetSockAddress = new InetSocketAddress("0.0.0.0", 8080);
-            wsServer = new SocketServer(getApplicationContext(), inetSockAddress);
+            String id = getDeviceID();
+            wsServer = new WebSocketConn(getApplicationContext(), id);
+            wsServer.connect();
         } catch (Exception e) {
             e.printStackTrace();
             Utils.logError(getApplicationContext(), e);
@@ -54,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startWSServer(View view) {
-        if (SocketServer.wsServerRunning) return;
-        wsServer.start();
+        if (WebSocketConn.wsServerRunning) return;
+        wsServer.connect();
     }
 
     private String getDeviceID() {
@@ -69,22 +57,5 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ((TextView) findViewById(R.id.ipAddress)).setText(id);
         return id;
-    }
-
-    private int sendIP(String id, String ip) {
-        try {
-            String urlString = "https://dd.filipkin.com/app/"+id+"/"+ip;
-            Log.v("URL", urlString);
-            URL url = new URL(urlString);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            return conn.getResponseCode();
-        } catch (Exception e) {
-            e.printStackTrace();
-            logError(getApplicationContext(), e);
-            return 500;
-        }
     }
 }
