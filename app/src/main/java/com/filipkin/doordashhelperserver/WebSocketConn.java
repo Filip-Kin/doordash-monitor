@@ -18,13 +18,11 @@ import java.net.URI;
 
 public class WebSocketConn extends WebSocketClient {
 
-    private Context context;
     private String id;
     public static boolean wsServerRunning = false;
 
-    public WebSocketConn(Context context, String id) {
+    public WebSocketConn(String id) {
         super(URI.create("wss://dd.filipkin.com:9008/"));
-        this.context = context;
         this.id = id;
         Log.i("WS", "Socket object created");
     }
@@ -34,8 +32,6 @@ public class WebSocketConn extends WebSocketClient {
         wsServerRunning = true;
         this.send("ESTABLISH SERVER:"+this.id);
         Log.i("WS", "WS Connected");
-        Looper.prepare();
-        Toast.makeText(context, "WS Connected", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -46,13 +42,10 @@ public class WebSocketConn extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         Log.i("WS", "WS Disconnected");
-        Looper.prepare();
-        Toast.makeText(context, "WS Disconnected", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onError(Exception e) {
         e.printStackTrace();
-        Utils.logError(context, e);
     }
 }

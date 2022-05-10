@@ -40,6 +40,18 @@
                             <td id="offer-store"></td>
                         </tr>
                         <tr>
+                            <td>Items</td>
+                            <td id="offer-items"></td>
+                        </tr>
+                        <tr>
+                            <td>Distance</td>
+                            <td id="offer-distance"></td>
+                        </tr>
+                        <tr>
+                            <td>Per Mile</td>
+                            <td id="offer-permile"></td>
+                        </tr>
+                        <tr>
                             <td>Drive Time</td>
                             <td id="offer-drivetime"></td>
                         </tr>
@@ -55,52 +67,7 @@
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-        <script>
-            function padDecimal(str) {
-                let parts = str.toString().split('.');
-                if (parts[1] == undefined) parts[1] = '00';
-                return `${parts[0]}.${parts[1].padEnd(2, '0')}`;
-            }
-
-            let ws;
-            let id = localStorage.getItem('id');
-            if (id) {
-                document.getElementById('device-id').value = id;
-                M.updateTextFields();
-            }
-
-            let connectButton = document.getElementById('connect-btn')
-            connectButton.addEventListener('click', () => {
-                document.documentElement.webkitRequestFullScreen();
-                id = document.getElementById('device-id').value;
-                ws = new WebSocket(`wss://${new URL(window.location).hostname}:9008`);
-                localStorage.setItem('id', id);
-
-                ws.addEventListener('message', (evt) => {
-                    if (evt.data === 'OK') {
-                        M.toast({html: 'Connected to server'});
-                        return ws.send(`CONNECT:${id}`);
-                    }
-                    let msg = JSON.parse(evt.data);
-                    if (msg.type === 'offer') {
-                        updateOfferUI(msg);
-                    } else if(msg.type === 'address') {
-                        document.getElementById('delivery-housenumber').innerHTML = msg.address;
-                    }
-                });
-                connectButton.parentElement.parentElement.style.display = 'none';
-                document.getElementById('offer-ui').style.display = 'block';
-            });
-
-
-            function updateOfferUI(offer) {
-                document.getElementById('offer-amount').innerHTML = `$${padDecimal(offer.amount)}`;
-                document.getElementById('offer-tip').innerHTML = `$${padDecimal(offer.tip)} ${offer.confident ? '&#10024;' : '&#10067;'}`;
-                document.getElementById('offer-store').innerHTML = offer.store;
-                document.getElementById('offer-drivetime').innerHTML = `${offer.driveTime} Mins`;
-                document.getElementById('offer-hourly').innerHTML = `$${padDecimal(offer.hourly)}/hr`;
-                document.getElementById('offer-subtotal').innerHTML = `$${padDecimal(offer.subtotal)}`;
-            }
-        </script>
+        <script src="./websocket.js"></script>
+        <script src="./index.js"></script>
     </body>
 </HTML>

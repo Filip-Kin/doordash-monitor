@@ -1,0 +1,6 @@
+[16:56:11] Screen 14 [Confirm delivery was completed, Rate this delivery, Confirm, Go back, Go back]
+[18:05:44] Screen 14 [Confirm you handed order directly to customer, Rate this delivery, Confirm to complete delivery, Go back, Go back]
+[18:18:17] Screen 14 [Confirm you handed order directly to customer, Rate this delivery, Confirm to complete delivery, Go back, Go back]
+[18:45:31] Screen 14 [Confirm delivery was completed, Rate this delivery, Confirm, Go back, Go back]
+[19:10:29] Screen 14 [Confirm delivery was completed, Rate this delivery, Confirm, Go back, Go back]
+[19:10:42] Screen 14 [Confirm delivery was completed, Rate this delivery, Confirm, Go back, Go back]

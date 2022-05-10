@@ -18,7 +18,7 @@ export class Server {
 
         server.on('message', (msg: string) => {
             let json = JSON.parse(msg);
-            if (json.type === 'offer') return this.broadcast(json);
+            if (['paraoffer', 'address', 'offer', 'looking'].includes(json.type)) return this.broadcast(json);
         });
 
         server.send(`OK:${id}`);

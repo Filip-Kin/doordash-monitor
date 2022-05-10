@@ -2,13 +2,9 @@ package com.filipkin.doordashhelperserver;
 
 import static java.text.DateFormat.getTimeInstance;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
-
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +24,8 @@ import java.util.regex.Pattern;
 
 public class Utils {
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     public static String getIPAddress(boolean useIPv4) {
         try {
@@ -112,7 +109,7 @@ public class Utils {
     }
 
     public static void appendLog(Context context, String text) {
-        File logFile = new File(context.getFilesDir(), "log");
+        File logFile = new File(context.getFilesDir(), DATE_FORMAT.format(new Date())+"-log.txt");
         if (!logFile.exists()) {
             try {
                 logFile.createNewFile();
@@ -124,7 +121,7 @@ public class Utils {
             //BufferedWriter for performance, true to set append to file flag
             BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
 
-            buf.append("[" + sdf.format(new Date()) + "] " + text);
+            buf.append("[" + TIME_FORMAT.format(new Date()) + "] " + text);
             buf.newLine();
             buf.close();
         } catch (IOException e) {
@@ -136,19 +133,5 @@ public class Utils {
         StringWriter sw = new StringWriter();
         e.printStackTrace(new PrintWriter(sw));
         Utils.appendLog(context, sw.toString());
-    }
-
-    public static Activity getActivity(Context context) {
-        if (context == null) {
-            return null;
-        } else if (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                return (Activity) context;
-            } else {
-                return getActivity(((ContextWrapper) context).getBaseContext());
-            }
-        }
-
-        return null;
     }
 }

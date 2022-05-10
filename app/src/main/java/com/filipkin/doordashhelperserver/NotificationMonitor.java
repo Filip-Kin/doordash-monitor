@@ -1,8 +1,7 @@
 package com.filipkin.doordashhelperserver;
 
-import static com.filipkin.doordashhelperserver.MainActivity.wsServer;
-
 import android.app.Notification;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.service.notification.NotificationListenerService;
@@ -37,8 +36,9 @@ public class NotificationMonitor extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        Notification n = sbn.getNotification();
+        Context context = getApplicationContext();
         try {
-            Notification n = sbn.getNotification();
             if (!(sbn.getPackageName().equals("com.paramobile") || sbn.getPackageName().equals("com.matusmak.fakenotifications")))
                 return;
             if (!n.extras.getString("android.title").startsWith("[DD]")) return;
@@ -46,6 +46,8 @@ public class NotificationMonitor extends NotificationListenerService {
             List<String> textMatches = Utils.regexMatch(n.extras.getString("android.text"), TEXT_PATTERN);
             Log.i("matches", titleMatches.toString());
             Log.i("matches", textMatches.toString());
+            Utils.appendLog(context, titleMatches.toString());
+            Utils.appendLog(context, textMatches.toString());
 
             ParaOffer offer = new ParaOffer(
                     Double.parseDouble(titleMatches.get(1)),
@@ -55,15 +57,18 @@ public class NotificationMonitor extends NotificationListenerService {
                     (titleMatches.get(4) != null),
                     (titleMatches.get(5) == null ? "Unknown" : titleMatches.get(5))
             );
-            wsServer.send(offer.toJson());
+            MainActivity.wsServer.send(offer.toJson());
         } catch (Exception e) {
             e.printStackTrace();
-            Utils.logError(getApplicationContext(), e);
+            Utils.logError(context, e);
+            Utils.appendLog(context, sbn.getPackageName());
+            Utils.appendLog(context, n.extras.getString("android.title"));
+            Utils.appendLog(context, n.extras.getString("android.text"));
         }
     }
 
     public class ParaOffer {
-        String type = "offer";
+        String type = "paraoffer";
         double amount;
         double tip;
         double subtotal;

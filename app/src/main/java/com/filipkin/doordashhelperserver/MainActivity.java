@@ -21,14 +21,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
 
             startService(new Intent(this, NotificationMonitor.class));
             startService(new Intent(this, ScreenReader.class));
 
             String id = getDeviceID();
-            wsServer = new WebSocketConn(getApplicationContext(), id);
+            wsServer = new WebSocketConn(id);
             wsServer.connect();
         } catch (Exception e) {
             e.printStackTrace();

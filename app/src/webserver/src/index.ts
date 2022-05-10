@@ -5,8 +5,8 @@ import { v4 as uuid } from 'uuid';
 import { Server } from './server';
 
 const server = https.createServer({
-    key: readFileSync('../privkey.pem', 'utf8'),
-    cert: readFileSync('../fullchain.pem', 'utf8')
+    key: readFileSync('./privkey.pem', 'utf8'),
+    cert: readFileSync('./fullchain.pem', 'utf8')
 }, (req, res) => {
     if (req.url?.endsWith('/')) req.url += 'index.html';
     readFile(__dirname.replace('/out', '/public') + req.url, (err, data) => {
@@ -41,7 +41,7 @@ wss.on('connection', (ws: WebSocket) => {
             if (ids[id]) {
                 ids[id].clients.push(ws);
             } else {
-                ws.send({ type: 'error', error: 'Id does not exist' });
+                ws.send(JSON.stringify({ type: 'error', error: 'Id does not exist' }));
             }
         }
     });

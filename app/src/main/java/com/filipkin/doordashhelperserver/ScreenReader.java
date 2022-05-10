@@ -6,9 +6,17 @@ import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import com.google.gson.Gson;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ScreenReader extends AccessibilityService {
+
+    private DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
     public class Screen {
         public static final int DASH_START = 1;
@@ -45,10 +53,39 @@ public class ScreenReader extends AccessibilityService {
                 }
 
                 Utils.appendLog(getApplicationContext(), "Screen " + screen + " " + allText.toString());
-                if (screen == Screen.DELIVERY) {
+
+                double thisDash = getThisDashIncome(allText);
+
+                if (screen == Screen.LOOKING_FOR_ORDERS) {
+                    MainActivity.wsServer.send("{\"type\": \"looking\", \"thisdash\": "+thisDash+"}");
+                } else if (screen == Screen.OFFER) {
+                    int dotIndex = allText.indexOf("•");
+
+                    double distance = -1.0;
+                    if (allText.get(dotIndex + 1).toString().contains("mi")) {
+                        distance = Double.parseDouble(allText.get(dotIndex + 1).toString().replace(" mi", ""));
+                    }
+
+                    int amountIndex = dotIndex + 1;
+                    if (distance > -1) {
+                        amountIndex++;
+                    }
+                    double amount = Double.parseDouble(allText.get(amountIndex).toString().replace("$", ""));
+
+                    Date due = TIME_FORMAT.parse(allText.get(2).toString().replace("Deliver by ", ""));
+                    long time = due.getTime() - (new Date()).getTime();
+
+                    MainActivity.wsServer.send(new Offer(
+                            amount,
+                            distance,
+                            (int) TimeUnit.MILLISECONDS.toMinutes(time),
+                            Integer.parseInt(allText.get(dotIndex - 1).toString().replace(" item", "").replace("s", "")),
+                            allText.get(3).toString()
+                    ).toJson());
+                } else if (screen == Screen.DELIVERY) {
                     int addy = allText.indexOf("Delivery for")+2;
                     if (!allText.get(addy).equals("Directions")) {
-                        MainActivity.wsServer.send("{\"type\": \"address\", \"address\": \""+allText.get(addy)+"\"}");
+                        MainActivity.wsServer.send("{\"type\": \"address\", \"address\": \""+allText.get(addy)+"\", \"thisdash\": "+thisDash+"}");
                     }
                 }
             }
@@ -89,5 +126,46 @@ public class ScreenReader extends AccessibilityService {
         if (text.startsWith("Drop-off")) return Screen.DELIVERY_DROPOFF;
         if (text.equalsIgnoreCase("Rate this delivery")) return Screen.DELIVERY_CONFIRM;
         return 0;
+    }
+
+    private double getThisDashIncome(List<CharSequence> allText) {
+        int thisDashIndex = allText.indexOf("this dash");
+        if (thisDashIndex > -1) {
+            return Double.parseDouble(allText.get(thisDashIndex).toString().substring(1));
+        } else {
+            return -1;
+        }
+    }
+
+    public class Offer {
+        String type = "offer";
+        double amount;
+        double distance;
+        int driveTime;
+        double hourly;
+        double perMile;
+        int items;
+        String store;
+
+        public Offer(double amount, double distance, int driveTime, int items, String store) {
+            this.amount = amount;
+            this.distance = distance;
+            this.driveTime = driveTime;
+            this.hourly = Math.round((amount / (driveTime / 60.0))*100) / 100.0;
+            if (distance == 0) {
+                this.perMile = this.amount;
+            } else if (distance < 0) {
+                this.perMile = -1;
+            } else {
+                this.perMile = Math.round((amount / distance)*100) / 100.0;
+            }
+            this.items = items;
+            this.store = store;
+        }
+
+        public String toJson() {
+            Gson gson = new Gson();
+            return gson.toJson(this);
+        }
     }
 }
