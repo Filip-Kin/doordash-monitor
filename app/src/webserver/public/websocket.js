@@ -37,6 +37,7 @@ function handleMessage(evt) {
         updateOfferUI(msg);
     } else if (msg.type === 'address') {
         document.getElementById('delivery-housenumber').innerHTML = msg.address;
+        document.getElementById('streetview').src = "https://maps.googleapis.com/maps/api/streetview?size=384x500&fov=100&key=AIzaSyDVIzjzMNCr9BiC0JISwZSBqI8ASCOAH78&location="+encodeURIComponent(msg.address);
     } else if (msg.type === 'looking') {
         document.getElementById('delivery-housenumber').innerHTML = '';
         //updateOfferUI({reset: true});
